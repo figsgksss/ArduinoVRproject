@@ -1,0 +1,50 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <MPU6050.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Setează adresa și dimensiunile LCD-ului (16x2)
+
+MPU6050 mpu;
+
+void setup() {
+  lcd.init();        // Inițializează LCD-ul
+  lcd.backlight();   // Activează iluminarea fundalului
+
+  Wire.begin();      // Inițializează I2C
+  mpu.initialize(); // Inițializează MPU6050
+
+  // Afișează "Proiect VR" în mijlocul primei linii
+  lcd.setCursor((16 - 11) / 2, 0); // Centrare "Proiect VR" pe prima linie
+  lcd.print("Proiect VR");
+
+  // Afișează "Versiunea 0.0.1" în mijlocul celei de-a doua linii
+  lcd.setCursor((16 - 13) / 2, 1); // Centrare "Versiunea 0.0.1" pe a doua linie
+  lcd.print("Versiunea 0.0.1");
+
+  delay(6000); // Așteaptă 6 secunde
+
+  // Curăță LCD-ul după 6 secunde
+  lcd.clear();
+}
+
+void loop() {
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz); // Citește valorile senzorului
+
+  // Curăță ecranul
+  lcd.setCursor(0, 1); // Setează cursorul la începutul liniei a doua
+  lcd.print("                "); // Afișează spații pentru a șterge textul anterior
+
+  if (gx < -5000) {
+    lcd.setCursor((16 - 10) / 2, 1); // Centrare "Stanga" pe a doua linie
+    lcd.print("Stanga");
+  } else if (gx > 5000) {
+    lcd.setCursor((16 - 11) / 2, 1); // Centrare "Dreapta" pe a doua linie
+    lcd.print("Dreapta");
+  } else {
+    lcd.setCursor((16 - 15) / 2, 1); // Centrare "Orientare Dreapta" pe a doua linie
+    lcd.print("Orientare Dreapta");
+  }
+
+  delay(500); // Adaugă o mică întârziere pentru a evita actualizările rapide ale LCD-ului
+}
