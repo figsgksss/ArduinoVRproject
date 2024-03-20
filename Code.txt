@@ -1,0 +1,50 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <MPU6050.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Set the address and dimensions of the LCD (16x2)
+
+MPU6050 mpu;
+
+void setup() {
+  lcd.init();        // Initialize the LCD
+  lcd.backlight();   // Turn on the backlight
+
+  Wire.begin();      // Initialize I2C
+  mpu.initialize(); // Initialize the MPU6050
+
+  // Display "VR Project" in the middle of the top row
+  lcd.setCursor((16 - 10) / 2, 0); // Center "VR Project" on the top row
+  lcd.print("VR Project");
+
+  // Display "Version 0.0.1" in the middle of the second row
+  lcd.setCursor((16 - 11) / 2, 1); // Center "Version 0.0.1" on the second row
+  lcd.print("Version 0.0.1");
+
+  delay(6000); // Wait for 6 seconds
+
+  // Clear the LCD after 6 seconds
+  lcd.clear();
+}
+
+void loop() {
+  int16_t ax, ay, az, gx, gy, gz;
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz); // Read sensor values
+
+  // Clear the screen
+  lcd.setCursor(0, 1); // Set the cursor to the beginning of the second row
+  lcd.print("                "); // Print spaces to clear the previous text
+
+  if (gx < -5000) {
+    lcd.setCursor((16 - 6) / 2, 1); // Center "Left" on the second row
+    lcd.print("Left");
+  } else if (gx > 5000) {
+    lcd.setCursor((16 - 7) / 2, 1); // Center "Right" on the second row
+    lcd.print("Right");
+  } else {
+    lcd.setCursor((16 - 12) / 2, 1); // Center "Facing Forward" on the second row
+    lcd.print("Facing Forward");
+  }
+
+  delay(500); // Add a small delay to avoid rapid LCD updates
+}
