@@ -1,7 +1,7 @@
 # ArduinoVRproject
 This is an project for VR we made a main menu and MPU6050 Compatible. 
 # What you need
-1.Arduino Uno Or Nano.
+1.Arduino Uno Or Nano I recommend uno.
 2.MPU6050 Board.
 3.LiquidCrystal I2C Display.
 4.Arduino IDE.
